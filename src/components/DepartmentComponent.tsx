@@ -2,11 +2,26 @@ import React, { useState } from 'react';
 import { List, ListItem, ListItemIcon, ListItemText, Collapse, Checkbox } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-const DepartmentComponent = ({ data }) => {
-  const [openDepartments, setOpenDepartments] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
+interface Department {
+  id: number;
+  name: string;
+  subDepartments: SubDepartment[];
+}
 
-  const handleDepartmentClick = (departmentId) => {
+interface SubDepartment {
+  id: number;
+  name: string;
+}
+
+interface DepartmentComponentProps {
+  data: Department[];
+}
+
+const DepartmentComponent: React.FC<DepartmentComponentProps> = ({ data }) => {
+  const [openDepartments, setOpenDepartments] = useState<number[]>([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+
+  const handleDepartmentClick = (departmentId: number) => {
     if (openDepartments.includes(departmentId)) {
       setOpenDepartments(openDepartments.filter(id => id !== departmentId));
     } else {
@@ -14,7 +29,7 @@ const DepartmentComponent = ({ data }) => {
     }
   };
 
-  const handleItemToggle = (itemId) => () => {
+  const handleItemToggle = (itemId: number) => () => {
     setSelectedItems((prevSelectedItems) => {
       if (prevSelectedItems.includes(itemId)) {
         return prevSelectedItems.filter(id => id !== itemId);
@@ -24,29 +39,29 @@ const DepartmentComponent = ({ data }) => {
     });
   };
 
-  const isDepartmentOpen = (departmentId) => openDepartments.includes(departmentId);
-  const isItemSelected = (itemId) => selectedItems.includes(itemId);
+  const isDepartmentOpen = (departmentId: number) => openDepartments.includes(departmentId);
+  const isItemSelected = (itemId: number) => selectedItems.includes(itemId);
 
-  const handleDepartmentSelection = (departmentId, subDepartmentIds) => () => {
-    setSelectedItems((prevSelectedItems) => {
-      const newSelectedItems = new Set(prevSelectedItems);
-      subDepartmentIds.forEach(id => {
-        if (!prevSelectedItems.includes(id)) {
-          newSelectedItems.add(id);
-        }
-      });
-      
-      if (subDepartmentIds.every(id => prevSelectedItems.includes(id))) {
-        subDepartmentIds.forEach(id => newSelectedItems.delete(id));
-      } else {
-        newSelectedItems.add(departmentId);
-      }
-      
-      return Array.from(newSelectedItems);
-    });
-  };
+  // const handleDepartmentSelection = (departmentId: number, subDepartmentIds: number[]) => () => {
+  //   setSelectedItems((prevSelectedItems) => {
+  //     const newSelectedItems = new Set<number>(prevSelectedItems);
+  //     subDepartmentIds.forEach(id => {
+  //       if (!prevSelectedItems.includes(id)) {
+  //         newSelectedItems.add(id);
+  //       }
+  //     });
 
-  const handleAllSubDepartmentsSelection = (departmentId, subDepartmentIds) => () => {
+  //     if (subDepartmentIds.every(id => prevSelectedItems.includes(id))) {
+  //       subDepartmentIds.forEach(id => newSelectedItems.delete(id));
+  //     } else {
+  //       newSelectedItems.add(departmentId);
+  //     }
+
+  //     return Array.from(newSelectedItems);
+  //   });
+  // };
+
+  const handleAllSubDepartmentsSelection = (departmentId: number, subDepartmentIds: number[]) => () => {
     setSelectedItems((prevSelectedItems) => {
       const newSelectedItems = new Set(prevSelectedItems);
       subDepartmentIds.forEach(id => {
@@ -89,17 +104,17 @@ const DepartmentComponent = ({ data }) => {
           <Collapse in={isDepartmentOpen(department.id)} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {department.subDepartments.map((subDept) => (
-                <ListItem key={subDept.id} button onClick={handleItemToggle(subDept.id)}>
+                <ListItem key={subDept.id} button>
                   <ListItemIcon>
-                    <Checkbox style={{cursor:"default"}}
+                    <Checkbox
                       edge="start"
                       checked={isItemSelected(subDept.id)}
                       tabIndex={-1}
                       disableRipple
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={handleItemToggle(subDept.id)}
                     />
                   </ListItemIcon>
-                  <ListItemText primary={subDept.name} />
+                  <ListItemText primary={subDept.name} style={{cursor: "default"}} />
                 </ListItem>
               ))}
               {/* <ListItem>
