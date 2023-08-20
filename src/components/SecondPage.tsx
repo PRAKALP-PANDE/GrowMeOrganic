@@ -48,7 +48,7 @@ const SecondPage = () => {
     ];
 
     return (
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 400, width: '90%', margin:"20px" }}>
             <DataGrid rows={posts} columns={columns} />
             {/* <DataGrid rows={posts} columns={columns} pageSize={5} /> */}
             <DepartmentComponent data={departmentData} />
